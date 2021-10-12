@@ -10,7 +10,7 @@ rest: "/borrow/{id}"
 
 Recomendar un listado de recursos al usuario a partir del tipo de recurso, del área temática o de los dos. Los recursos están clasificados por tipo de recurso (libros, revistas, fichas, etc) pero también por área temática (ciencias, naturaleza, historia, etc).
 
-rest: "/listMaterialAvailable/{name}"
+rest: "/listByThematicArea/{search}"
       "/listTypeMaterial/{search}"
 
 Devolver un recurso que se encontraba prestado, obviamente si un recurso no se encuentra en préstamo no podrá ser devuelto. Indicar el resultado con un mensaje.
