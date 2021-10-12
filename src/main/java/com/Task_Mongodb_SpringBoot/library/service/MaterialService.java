@@ -12,10 +12,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
-public class MaterialService implements MaterialServiceRepository{
+public class MaterialService implements MaterialServiceRepository {
 
     @Autowired
     private MaterialRepository materialRepository;
@@ -35,7 +36,7 @@ public class MaterialService implements MaterialServiceRepository{
 
     @Override
     public MaterialDTO findById(String id) {
-        Material material =materialRepository.findById(id).orElseThrow(
+        Material material = materialRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Material not found")
         );
 
@@ -45,7 +46,7 @@ public class MaterialService implements MaterialServiceRepository{
     @Override
     public MaterialDTO save(MaterialDTO materialDTO) {
         materialDTO.setAvailable(true);
-        Material material =materialMapper.fromDTO(materialDTO);
+        Material material = materialMapper.fromDTO(materialDTO);
         return materialMapper.fromCollection(materialRepository.save(material));
     }
 
@@ -61,15 +62,32 @@ public class MaterialService implements MaterialServiceRepository{
         materialRepository.deleteById(id);
     }
 
-    private List<MaterialDTO> findAllMaterialByName(String name){
+    private List<MaterialDTO> findAllMaterialByName(String name) {
         Query query = new Query()
-                .addCriteria(Criteria.where("name").is(name));
+                .addCriteria(Criteria.where("name").regex(name));
         List<Material> materialList = mongoTemplate.find(query, Material.class);
 
         return materialMapper.fromCollectionList(materialList);
     }
 
-    private List<MaterialDTO> filterAvailableByName(List<MaterialDTO> materialDTOList){;
+    public List<MaterialDTO> findAllMaterialByThematicArea(String thematicArea) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("thematicArea").regex(thematicArea));
+        List<Material> materialList = mongoTemplate.find(query, Material.class);
+
+        return materialMapper.fromCollectionList(materialList);
+    }
+
+    public List<MaterialDTO> findAllMaterialByTypeMaterial(String typeMaterial) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("typeMaterial").regex(typeMaterial));
+        List<Material> materialList = mongoTemplate.find(query, Material.class);
+
+        return materialMapper.fromCollectionList(materialList);
+    }
+
+    private List<MaterialDTO> filterAvailableByName(List<MaterialDTO> materialDTOList) {
+        ;
         List<MaterialDTO> materialDTOListAvailable = materialDTOList
                 .stream()
                 .filter((materialDTO -> materialDTO.isAvailable())).collect(Collectors.toList());
@@ -77,16 +95,16 @@ public class MaterialService implements MaterialServiceRepository{
         return materialDTOListAvailable;
     }
 
-    private LocalDate getLastDateNotAvailable(List<MaterialDTO> materialDTOList){
+    private LocalDate getLastDateNotAvailable(List<MaterialDTO> materialDTOList) {
 
         LocalDate localDate = materialDTOList.stream().map(materialDTO -> materialDTO.getBorrowDateMaterial()).max(LocalDate::compareTo).get();
         return localDate;
     }
 
-    public String availableMaterial(String name){
+    public String availableMaterial(String name) {
         List<MaterialDTO> materialDTOList = findAllMaterialByName(name);
         List<MaterialDTO> materialDTOListAvailable = filterAvailableByName(materialDTOList);
-        if(materialDTOListAvailable.size() > 0){
+        if (materialDTOListAvailable.size() > 0) {
             return "Available.";
         }
 
@@ -94,11 +112,11 @@ public class MaterialService implements MaterialServiceRepository{
                 "The last copy was borrowed on " + getLastDateNotAvailable(materialDTOList) + ".";
     }
 
-    public String borrowedMaterial(String id) {
+    public String borrowMaterial(String id) {
 
         MaterialDTO materialDTO = findById(id);
 
-        if (materialDTO.isAvailable()){
+        if (materialDTO.isAvailable()) {
 
             materialDTO.setAvailable(false);
             materialDTO.setBorrowDateMaterial(LocalDate.now());
@@ -108,4 +126,22 @@ public class MaterialService implements MaterialServiceRepository{
 
         return "Not Available.";
     }
+
+    public String returnMaterial(String id) {
+
+        MaterialDTO materialDTO = findById(id);
+
+        if (!materialDTO.isAvailable()) {
+
+            materialDTO.setAvailable(true);
+            materialDTO.setBorrowDateMaterial(null);
+            update(materialDTO);
+            return "Has been returned.";
+        }
+
+        return "This material is not borrowed.";
+
+    }
+
+
 }

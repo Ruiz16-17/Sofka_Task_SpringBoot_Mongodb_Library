@@ -11,6 +11,7 @@ public class Material {
     @Id
     private String id;
     private String typeMaterial;
+    private String thematicArea;
     private String name;
     private boolean isAvailable;
     private int numberCopyMaterial;
@@ -54,6 +55,14 @@ public class Material {
 
     public void setNumberCopyMaterial(int numberCopyMaterial) {
         this.numberCopyMaterial = numberCopyMaterial;
+    }
+
+    public String getThematicArea() {
+        return thematicArea;
+    }
+
+    public void setThematicArea(String thematicArea) {
+        this.thematicArea = thematicArea;
     }
 
     public LocalDate getBorrowDateMaterial() {

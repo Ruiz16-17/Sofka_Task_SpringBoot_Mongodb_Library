@@ -7,6 +7,7 @@ public class MaterialDTO {
     private String id;
     private String typeMaterial;
     private String name;
+    private String thematicArea;
     private boolean isAvailable;
     private int numberCopyMaterial;
     private LocalDate borrowDateMaterial;
@@ -36,6 +37,14 @@ public class MaterialDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getThematicArea() {
+        return thematicArea;
+    }
+
+    public void setThematicArea(String thematicArea) {
+        this.thematicArea = thematicArea;
     }
 
     public boolean isAvailable() {

@@ -22,6 +22,16 @@ public class MaterialController {
         return ResponseEntity.status(HttpStatus.OK).body(materialService.findAll());
     }
 
+    @GetMapping("/listByThematicArea/{search}")
+    public ResponseEntity<List<MaterialDTO>> findAllMaterialByThematicArea(@PathVariable("search") String search){
+        return ResponseEntity.status(HttpStatus.OK).body(materialService.findAllMaterialByThematicArea(search));
+    }
+
+    @GetMapping("/listTypeMaterial/{search}")
+    public ResponseEntity<List<MaterialDTO>> findAllMaterialByTypeMaterial(@PathVariable("search") String search){
+        return ResponseEntity.status(HttpStatus.OK).body(materialService.findAllMaterialByTypeMaterial(search));
+    }
+
     @GetMapping("/materialAvailable/{name}")
     public ResponseEntity<String> findAllByName(@PathVariable("name") String name){
         return ResponseEntity.status(HttpStatus.OK).body(materialService.availableMaterial(name));
@@ -52,7 +62,17 @@ public class MaterialController {
     public ResponseEntity<String> borrowMaterial(@PathVariable("id") String id){
         if(id != null){
 
-            return ResponseEntity.status(HttpStatus.OK).body(materialService.borrowedMaterial(id));
+            return ResponseEntity.status(HttpStatus.OK).body(materialService.borrowMaterial(id));
+        }
+
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/return/{id}")
+    public ResponseEntity<String> returnMaterial(@PathVariable("id") String id){
+        if(id != null){
+
+            return ResponseEntity.status(HttpStatus.OK).body(materialService.returnMaterial(id));
         }
 
         return new ResponseEntity(HttpStatus.NOT_FOUND);
