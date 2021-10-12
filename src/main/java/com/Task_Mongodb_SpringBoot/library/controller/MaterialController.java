@@ -32,7 +32,7 @@ public class MaterialController {
         return ResponseEntity.status(HttpStatus.OK).body(materialService.findAllMaterialByTypeMaterial(search));
     }
 
-    @GetMapping("/materialAvailable/{name}")
+    @GetMapping("/listMaterialAvailable/{name}")
     public ResponseEntity<String> findAllByName(@PathVariable("name") String name){
         return ResponseEntity.status(HttpStatus.OK).body(materialService.availableMaterial(name));
     }
