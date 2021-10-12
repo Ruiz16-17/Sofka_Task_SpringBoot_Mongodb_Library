@@ -13,8 +13,8 @@ public class Material {
     private String typeMaterial;
     private String name;
     private boolean isAvailable;
-    private int NumberCopyMaterial;
-    private LocalDate loanDateMaterial;
+    private int numberCopyMaterial;
+    private LocalDate borrowDateMaterial;
 
     public String getId() {
         return id;
@@ -49,18 +49,18 @@ public class Material {
     }
 
     public int getNumberCopyMaterial() {
-        return NumberCopyMaterial;
+        return numberCopyMaterial;
     }
 
     public void setNumberCopyMaterial(int numberCopyMaterial) {
-        this.NumberCopyMaterial = numberCopyMaterial;
+        this.numberCopyMaterial = numberCopyMaterial;
     }
 
-    public LocalDate getLoanDateMaterial() {
-        return loanDateMaterial;
+    public LocalDate getBorrowDateMaterial() {
+        return borrowDateMaterial;
     }
 
-    public void setLoanDateMaterial(LocalDate loanDateMaterial) {
-        this.loanDateMaterial = loanDateMaterial;
+    public void setBorrowDateMaterial(LocalDate borrowDateMaterial) {
+        this.borrowDateMaterial = borrowDateMaterial;
     }
 }

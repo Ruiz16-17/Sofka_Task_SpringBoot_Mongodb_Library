@@ -48,6 +48,16 @@ public class MaterialController {
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
+    @PutMapping("/borrow/{id}")
+    public ResponseEntity<String> borrowMaterial(@PathVariable("id") String id){
+        if(id != null){
+
+            return ResponseEntity.status(HttpStatus.OK).body(materialService.borrowedMaterial(id));
+        }
+
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable("id") String id){
         try {

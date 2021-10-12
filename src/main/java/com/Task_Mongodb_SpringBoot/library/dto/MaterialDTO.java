@@ -9,7 +9,7 @@ public class MaterialDTO {
     private String name;
     private boolean isAvailable;
     private int numberCopyMaterial;
-    private LocalDate loanDateMaterial;
+    private LocalDate borrowDateMaterial;
 
     public MaterialDTO() {
     }
@@ -54,11 +54,11 @@ public class MaterialDTO {
         this.numberCopyMaterial = numberCopyMaterial;
     }
 
-    public LocalDate getLoanDateMaterial() {
-        return loanDateMaterial;
+    public LocalDate getBorrowDateMaterial() {
+        return borrowDateMaterial;
     }
 
-    public void setLoanDateMaterial(LocalDate loanDateMaterial) {
-        this.loanDateMaterial = loanDateMaterial;
+    public void setBorrowDateMaterial(LocalDate borrowDateMaterial) {
+        this.borrowDateMaterial = borrowDateMaterial;
     }
 }

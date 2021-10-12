@@ -69,8 +69,7 @@ public class MaterialService implements MaterialServiceRepository{
         return materialMapper.fromCollectionList(materialList);
     }
 
-    private List<MaterialDTO> filterAvailableByName(String name){
-        List<MaterialDTO> materialDTOList = findAllMaterialByName(name);
+    private List<MaterialDTO> filterAvailableByName(List<MaterialDTO> materialDTOList){;
         List<MaterialDTO> materialDTOListAvailable = materialDTOList
                 .stream()
                 .filter((materialDTO -> materialDTO.isAvailable())).collect(Collectors.toList());
@@ -80,18 +79,33 @@ public class MaterialService implements MaterialServiceRepository{
 
     private LocalDate getLastDateNotAvailable(List<MaterialDTO> materialDTOList){
 
-        LocalDate localDate = materialDTOList.stream().map(materialDTO -> materialDTO.getLoanDateMaterial()).max(LocalDate::compareTo).get();
+        LocalDate localDate = materialDTOList.stream().map(materialDTO -> materialDTO.getBorrowDateMaterial()).max(LocalDate::compareTo).get();
         return localDate;
     }
 
     public String availableMaterial(String name){
-        List<MaterialDTO> materialDTOList = filterAvailableByName(name);
-
-        if(materialDTOList.size() > 0){
-            return "Available";
+        List<MaterialDTO> materialDTOList = findAllMaterialByName(name);
+        List<MaterialDTO> materialDTOListAvailable = filterAvailableByName(materialDTOList);
+        if(materialDTOListAvailable.size() > 0){
+            return "Available.";
         }
 
         return "Not Available. \n" +
-                "The last copy was loaned on " + getLastDateNotAvailable(materialDTOList);
+                "The last copy was borrowed on " + getLastDateNotAvailable(materialDTOList) + ".";
+    }
+
+    public String borrowedMaterial(String id) {
+
+        MaterialDTO materialDTO = findById(id);
+
+        if (materialDTO.isAvailable()){
+
+            materialDTO.setAvailable(false);
+            materialDTO.setBorrowDateMaterial(LocalDate.now());
+            update(materialDTO);
+            return "Has been borrowed.";
+        }
+
+        return "Not Available.";
     }
 }

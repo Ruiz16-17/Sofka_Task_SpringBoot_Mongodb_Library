@@ -16,7 +16,7 @@ public class MaterialMapper {
         material.setName(materialDTO.getName());
         material.setAvailable(materialDTO.isAvailable());
         material.setNumberCopyMaterial(materialDTO.getNumberCopyMaterial());
-        material.setLoanDateMaterial(materialDTO.getLoanDateMaterial());
+        material.setBorrowDateMaterial(materialDTO.getBorrowDateMaterial());
 
         return material;
     }
@@ -28,7 +28,7 @@ public class MaterialMapper {
         materialDTO.setName(material.getName());
         materialDTO.setAvailable(material.isAvailable());
         materialDTO.setNumberCopyMaterial(material.getNumberCopyMaterial());
-        materialDTO.setLoanDateMaterial(material.getLoanDateMaterial());
+        materialDTO.setBorrowDateMaterial(material.getBorrowDateMaterial());
 
         return materialDTO;
     }
