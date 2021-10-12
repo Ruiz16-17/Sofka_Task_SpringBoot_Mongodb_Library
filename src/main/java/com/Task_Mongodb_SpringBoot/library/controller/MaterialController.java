@@ -2,7 +2,6 @@ package com.Task_Mongodb_SpringBoot.library.controller;
 
 import com.Task_Mongodb_SpringBoot.library.dto.MaterialDTO;
 import com.Task_Mongodb_SpringBoot.library.service.MaterialService;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +17,14 @@ public class MaterialController {
     @Autowired
     private MaterialService materialService;
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public ResponseEntity<List<MaterialDTO>> findAll(){
         return ResponseEntity.status(HttpStatus.OK).body(materialService.findAll());
+    }
+
+    @GetMapping("/materialAvailable/{name}")
+    public ResponseEntity<String> findAllByName(@PathVariable("name") String name){
+        return ResponseEntity.status(HttpStatus.OK).body(materialService.availableMaterial(name));
     }
 
     @GetMapping("/{id}")
