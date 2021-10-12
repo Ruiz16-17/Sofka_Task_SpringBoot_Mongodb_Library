@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -21,11 +22,13 @@ public class MaterialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<MaterialDTO>> findAll(){
+
         return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/list")).body(materialService.findAll());
     }
 
     @GetMapping("/listByThematicArea/{search}")
     public ResponseEntity<List<MaterialDTO>> findAllMaterialByThematicArea(@PathVariable("search") String search){
+
         return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/listByThematicArea/")).body(materialService.findAllMaterialByThematicArea(search));
     }
 
@@ -41,7 +44,14 @@ public class MaterialController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MaterialDTO> findById(@PathVariable("id") String id){
-        return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/")).body(materialService.findById(id));
+
+        try {
+
+            return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/{id}")).body(materialService.findById(id));
+        }catch (Exception exception){
+
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/save")
@@ -61,7 +71,7 @@ public class MaterialController {
     }
 
     @PutMapping("/borrow/{id}")
-    public ResponseEntity<String> borrowMaterial(@PathVariable("id") String id){
+    public ResponseEntity<String> borrowMaterial(@PathVariable("id") String id) throws Exception {
         if(id != null){
 
             return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/borrow/")).body(materialService.borrowMaterial(id));
@@ -86,7 +96,6 @@ public class MaterialController {
             materialService.delete(id);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception exception){
-            System.out.println(exception.getMessage());
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }

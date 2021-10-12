@@ -1,7 +1,9 @@
 package com.Task_Mongodb_SpringBoot.library.controller;
 
 import com.Task_Mongodb_SpringBoot.library.dto.MaterialDTO;
+import com.Task_Mongodb_SpringBoot.library.repository.MaterialRepository;
 import com.Task_Mongodb_SpringBoot.library.service.MaterialService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,14 +15,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
+import java.util.Optional;
 
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -30,12 +33,15 @@ class MaterialControllerTest{
     @MockBean
     private MaterialService materialService;
 
+    @MockBean
+    private MaterialRepository materialRepository;
+
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     @DisplayName("GET/ Material success")
-    void testFindAllMaterial() throws Exception{
+    void testFindAllMaterialSuccess() throws Exception{
 
         MaterialDTO materialDTO = new MaterialDTO();
         materialDTO.setId("1");
@@ -86,8 +92,69 @@ class MaterialControllerTest{
                 .andExpect(jsonPath("$[0].thematicArea",is("Guerra")))
                 .andExpect(jsonPath("$[0].name",is("La Odisea")))
                 .andExpect(jsonPath("$[0].numberCopyMaterial",is(1)))
-                .andExpect(jsonPath("$[0].available",is(true)));
+                .andExpect(jsonPath("$[0].available",is(true)))
+                .andExpect(jsonPath("$[3].id",is("4")))
+                .andExpect(jsonPath("$[3].typeMaterial",is("Revista")))
+                .andExpect(jsonPath("$[3].thematicArea",is("Noticias")))
+                .andExpect(jsonPath("$[3].name",is("Revista Semana")))
+                .andExpect(jsonPath("$[3].numberCopyMaterial",is(1)))
+                .andExpect(jsonPath("$[3].available",is(true)));
 
+    }
 
+    @Test
+    @DisplayName("GET/ Material not found")
+    void testFindAllMaterialNotFound() throws Exception {
+
+        doReturn(Optional.empty()).when(materialRepository).findById("1");
+
+        mockMvc.perform(get("/material/{id}","1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET/ Material not found")
+    void testSaveMaterial() throws Exception {
+
+        MaterialDTO materialDTOPost = new MaterialDTO();
+        materialDTOPost.setId("1");
+        materialDTOPost.setTypeMaterial("Libro");
+        materialDTOPost.setThematicArea("Guerra");
+        materialDTOPost.setName("La Odisea");
+        materialDTOPost.setNumberCopyMaterial(1);
+        materialDTOPost.setAvailable(true);
+
+        MaterialDTO materialDTOReturn = new MaterialDTO();
+        materialDTOReturn.setId("1");
+        materialDTOReturn.setTypeMaterial("Libro");
+        materialDTOReturn.setThematicArea("Guerra");
+        materialDTOReturn.setName("La Odisea");
+        materialDTOReturn.setNumberCopyMaterial(1);
+        materialDTOReturn.setAvailable(true);
+
+        doReturn(materialDTOReturn).when(materialService).save(any());
+
+        mockMvc.perform(post("/material/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(materialDTOPost)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().string(HttpHeaders.LOCATION,"/material/save"))
+                //.andExpect(header().string(HttpHeaders.ETAG, "\"1\""))
+                .andExpect(jsonPath("$.id",is("1")))
+                .andExpect(jsonPath("$.typeMaterial",is("Libro")))
+                .andExpect(jsonPath("$.thematicArea",is("Guerra")))
+                .andExpect(jsonPath("$.name",is("La Odisea")))
+                .andExpect(jsonPath("$.numberCopyMaterial",is(1)))
+                .andExpect(jsonPath("$.available",is(true)));
+
+    }
+
+    static String asJsonString(final Object object){
+        try {
+            return new ObjectMapper().writeValueAsString(object);
+        }catch (Exception exception){
+            throw new RuntimeException(exception);
+        }
     }
 }

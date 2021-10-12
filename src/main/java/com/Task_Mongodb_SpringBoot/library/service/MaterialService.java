@@ -35,9 +35,12 @@ public class MaterialService implements MaterialServiceRepository {
     }
 
     @Override
-    public MaterialDTO findById(String id) {
-        Material material = materialRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Material not found")
+    public MaterialDTO findById(String id){
+
+        Material material = materialRepository.findById(id)
+                .orElseThrow(
+                () ->  new RuntimeException("Material not found")
+
         );
 
         return materialMapper.fromCollection(material);
@@ -112,7 +115,7 @@ public class MaterialService implements MaterialServiceRepository {
                 "The last copy was borrowed on " + getLastDateNotAvailable(materialDTOList) + ".";
     }
 
-    public String borrowMaterial(String id) {
+    public String borrowMaterial(String id) throws Exception {
 
         MaterialDTO materialDTO = findById(id);
 
