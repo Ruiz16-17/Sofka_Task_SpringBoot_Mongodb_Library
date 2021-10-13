@@ -21,58 +21,59 @@ public class MaterialController {
     private MaterialService materialService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<MaterialDTO>> findAll(){
+    public ResponseEntity<List<MaterialDTO>> findAll() {
 
         return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/list")).body(materialService.findAll());
     }
 
     @GetMapping("/listByThematicArea/{search}")
-    public ResponseEntity<List<MaterialDTO>> findAllMaterialByThematicArea(@PathVariable("search") String search){
+    public ResponseEntity<List<MaterialDTO>> findAllMaterialByThematicArea(@PathVariable("search") String search) {
 
         return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/listByThematicArea/")).body(materialService.findAllMaterialByThematicArea(search));
     }
 
     @GetMapping("/listTypeMaterial/{search}")
-    public ResponseEntity<List<MaterialDTO>> findAllMaterialByTypeMaterial(@PathVariable("search") String search){
+    public ResponseEntity<List<MaterialDTO>> findAllMaterialByTypeMaterial(@PathVariable("search") String search) {
         return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/listTypeMaterial/")).body(materialService.findAllMaterialByTypeMaterial(search));
     }
 
     @GetMapping("/listMaterialAvailable/{name}")
-    public ResponseEntity<String> findAllByName(@PathVariable("name") String name){
+    public ResponseEntity<String> findAllByName(@PathVariable("name") String name) {
         return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/listMaterialAvailable/")).body(materialService.availableMaterial(name));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MaterialDTO> findById(@PathVariable("id") String id){
+    public ResponseEntity<MaterialDTO> findById(@PathVariable("id") String id) {
 
         try {
 
             return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/{id}")).body(materialService.findById(id));
-        }catch (Exception exception){
+        } catch (Exception exception) {
 
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping("/save")
-    public ResponseEntity<MaterialDTO> save(@RequestBody MaterialDTO materialDTO){
+    public ResponseEntity<MaterialDTO> save(@RequestBody MaterialDTO materialDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).location(URI.create("/material/save")).body(materialService.save(materialDTO));
 
     }
 
     @PutMapping("/update")
-    public ResponseEntity<MaterialDTO> update(@RequestBody MaterialDTO materialDTO){
-        if(materialDTO.getId() != null){
+    public ResponseEntity<MaterialDTO> update(@RequestBody MaterialDTO materialDTO) {
 
-            return new ResponseEntity(materialService.update(materialDTO), HttpStatus.OK);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/update")).body(materialService.update(materialDTO));
+        } catch (Exception exception) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/borrow/{id}")
     public ResponseEntity<String> borrowMaterial(@PathVariable("id") String id) throws Exception {
-        if(id != null){
+        if (id != null) {
 
             return ResponseEntity.status(HttpStatus.OK).location(URI.create("/material/borrow/")).body(materialService.borrowMaterial(id));
         }
@@ -81,8 +82,8 @@ public class MaterialController {
     }
 
     @PutMapping("/return/{id}")
-    public ResponseEntity<String> returnMaterial(@PathVariable("id") String id){
-        if(id != null){
+    public ResponseEntity<String> returnMaterial(@PathVariable("id") String id) {
+        if (id != null) {
 
             return ResponseEntity.status(HttpStatus.OK).body(materialService.returnMaterial(id));
         }
@@ -91,11 +92,11 @@ public class MaterialController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable("id") String id){
+    public ResponseEntity delete(@PathVariable("id") String id) {
         try {
             materialService.delete(id);
             return new ResponseEntity(HttpStatus.OK);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }

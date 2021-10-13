@@ -21,14 +21,13 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class MaterialControllerTest{
+class MaterialControllerTest {
 
     @MockBean
     private MaterialService materialService;
@@ -39,41 +38,14 @@ class MaterialControllerTest{
     @Autowired
     private MockMvc mockMvc;
 
+    MaterialDTO materialDTO = new MaterialDTO("1", "Libro", "La Odisea", "Guerra", true, 1, null);
+    MaterialDTO materialDTO2 = new MaterialDTO("2", "Libro", "La Odisea", "Guerra", true, 2, null);
+    MaterialDTO materialDTO3 = new MaterialDTO("3", "Libro", "La Odisea", "Guerra", true, 3, null);
+    MaterialDTO materialDTO4 = new MaterialDTO("4", "Revista", "Revista Semana", "Noticias", true, 1, null);
+
     @Test
     @DisplayName("GET/ Material success")
-    void testFindAllMaterialSuccess() throws Exception{
-
-        MaterialDTO materialDTO = new MaterialDTO();
-        materialDTO.setId("1");
-        materialDTO.setTypeMaterial("Libro");
-        materialDTO.setThematicArea("Guerra");
-        materialDTO.setName("La Odisea");
-        materialDTO.setNumberCopyMaterial(1);
-        materialDTO.setAvailable(true);
-
-        MaterialDTO materialDTO2 = new MaterialDTO();
-        materialDTO2.setId("2");
-        materialDTO2.setTypeMaterial("Libro");
-        materialDTO2.setThematicArea("Guerra");
-        materialDTO2.setName("La Odisea");
-        materialDTO2.setNumberCopyMaterial(2);
-        materialDTO2.setAvailable(true);
-
-        MaterialDTO materialDTO3 = new MaterialDTO();
-        materialDTO3.setId("3");
-        materialDTO3.setTypeMaterial("Libro");
-        materialDTO3.setThematicArea("Guerra");
-        materialDTO3.setName("La Odisea");
-        materialDTO3.setNumberCopyMaterial(3);
-        materialDTO3.setAvailable(true);
-
-        MaterialDTO materialDTO4 = new MaterialDTO();
-        materialDTO4.setId("4");
-        materialDTO4.setTypeMaterial("Revista");
-        materialDTO4.setThematicArea("Noticias");
-        materialDTO4.setName("Revista Semana");
-        materialDTO4.setNumberCopyMaterial(1);
-        materialDTO4.setAvailable(true);
+    void testFindAllMaterialSuccess() throws Exception {
 
         doReturn(Lists.newArrayList(
                 materialDTO,
@@ -85,20 +57,20 @@ class MaterialControllerTest{
         mockMvc.perform(get("/material/list"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header().string(HttpHeaders.LOCATION,"/material/list"))
+                .andExpect(header().string(HttpHeaders.LOCATION, "/material/list"))
                 .andExpect(jsonPath("$", hasSize(4)))
-                .andExpect(jsonPath("$[0].id",is("1")))
-                .andExpect(jsonPath("$[0].typeMaterial",is("Libro")))
-                .andExpect(jsonPath("$[0].thematicArea",is("Guerra")))
-                .andExpect(jsonPath("$[0].name",is("La Odisea")))
-                .andExpect(jsonPath("$[0].numberCopyMaterial",is(1)))
-                .andExpect(jsonPath("$[0].available",is(true)))
-                .andExpect(jsonPath("$[3].id",is("4")))
-                .andExpect(jsonPath("$[3].typeMaterial",is("Revista")))
-                .andExpect(jsonPath("$[3].thematicArea",is("Noticias")))
-                .andExpect(jsonPath("$[3].name",is("Revista Semana")))
-                .andExpect(jsonPath("$[3].numberCopyMaterial",is(1)))
-                .andExpect(jsonPath("$[3].available",is(true)));
+                .andExpect(jsonPath("$[0].id", is("1")))
+                .andExpect(jsonPath("$[0].typeMaterial", is("Libro")))
+                .andExpect(jsonPath("$[0].thematicArea", is("Guerra")))
+                .andExpect(jsonPath("$[0].name", is("La Odisea")))
+                .andExpect(jsonPath("$[0].numberCopyMaterial", is(1)))
+                .andExpect(jsonPath("$[0].available", is(true)))
+                .andExpect(jsonPath("$[3].id", is("4")))
+                .andExpect(jsonPath("$[3].typeMaterial", is("Revista")))
+                .andExpect(jsonPath("$[3].thematicArea", is("Noticias")))
+                .andExpect(jsonPath("$[3].name", is("Revista Semana")))
+                .andExpect(jsonPath("$[3].numberCopyMaterial", is(1)))
+                .andExpect(jsonPath("$[3].available", is(true)));
 
     }
 
@@ -106,14 +78,34 @@ class MaterialControllerTest{
     @DisplayName("GET/ Material not found")
     void testFindAllMaterialNotFound() throws Exception {
 
-        doReturn(Optional.empty()).when(materialRepository).findById("1");
+        doReturn(null).when(materialService).findById("1");
 
-        mockMvc.perform(get("/material/{id}","1"))
+        mockMvc.perform(get("/material/{id}", "1"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("GET/ Material not found")
+    @DisplayName("GET/ Material by id")
+    void testFindMaterialById() throws Exception {
+
+        doReturn(materialDTO).when(materialService).findById("1");
+
+        mockMvc.perform(get("/material/{id}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(jsonPath("$.typeMaterial", is("Libro")))
+                .andExpect(jsonPath("$.thematicArea", is("Guerra")))
+                .andExpect(jsonPath("$.name", is("La Odisea")))
+                .andExpect(jsonPath("$.numberCopyMaterial", is(1)))
+                .andExpect(jsonPath("$.available", is(true)));
+
+        /*verify(materialService, times(1)).findById("1");
+        verifyNoMoreInteractions(materialService);*/
+    }
+
+    @Test
+    @DisplayName("POST/ Save Material")
     void testSaveMaterial() throws Exception {
 
         MaterialDTO materialDTOPost = new MaterialDTO();
@@ -135,25 +127,59 @@ class MaterialControllerTest{
         doReturn(materialDTOReturn).when(materialService).save(any());
 
         mockMvc.perform(post("/material/save")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(materialDTOPost)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(materialDTOPost)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header().string(HttpHeaders.LOCATION,"/material/save"))
+                .andExpect(header().string(HttpHeaders.LOCATION, "/material/save"))
                 //.andExpect(header().string(HttpHeaders.ETAG, "\"1\""))
-                .andExpect(jsonPath("$.id",is("1")))
-                .andExpect(jsonPath("$.typeMaterial",is("Libro")))
-                .andExpect(jsonPath("$.thematicArea",is("Guerra")))
-                .andExpect(jsonPath("$.name",is("La Odisea")))
-                .andExpect(jsonPath("$.numberCopyMaterial",is(1)))
-                .andExpect(jsonPath("$.available",is(true)));
+                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(jsonPath("$.typeMaterial", is("Libro")))
+                .andExpect(jsonPath("$.thematicArea", is("Guerra")))
+                .andExpect(jsonPath("$.name", is("La Odisea")))
+                .andExpect(jsonPath("$.numberCopyMaterial", is(1)))
+                .andExpect(jsonPath("$.available", is(true)));
 
     }
 
-    static String asJsonString(final Object object){
+    @Test
+    @DisplayName("GET/ Update Material")
+    void testUpdateMaterial() throws Exception {
+
+        MaterialDTO materialDTOSave = new MaterialDTO();
+        materialDTOSave.setId("1");
+        materialDTOSave.setTypeMaterial("Libro");
+        materialDTOSave.setThematicArea("Guerra");
+        materialDTOSave.setName("La Odisea");
+        materialDTOSave.setNumberCopyMaterial(1);
+        materialDTOSave.setAvailable(true);
+
+        MaterialDTO materialDTOUpdate = new MaterialDTO();
+        materialDTOUpdate.setId("1");
+        materialDTOUpdate.setTypeMaterial("Revista");
+        materialDTOUpdate.setThematicArea("Noticias");
+        materialDTOUpdate.setName("Revista Semana");
+        materialDTOUpdate.setAvailable(true);
+
+        doReturn(materialDTOUpdate).when(materialService.update(any()));
+
+        mockMvc.perform(put("/material/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(materialDTOSave)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().string(HttpHeaders.LOCATION, "/material/update"))
+                .andExpect(jsonPath("$.typeMaterial", is("Revista")))
+                .andExpect(jsonPath("$.thematicArea", is("Noticias")))
+                .andExpect(jsonPath("$.name", is("Revista Semana")))
+                .andExpect(jsonPath("$.available", is(true)));
+
+    }
+
+    static String asJsonString(final Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
     }

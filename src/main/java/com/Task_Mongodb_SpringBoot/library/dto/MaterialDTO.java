@@ -15,6 +15,16 @@ public class MaterialDTO {
     public MaterialDTO() {
     }
 
+    public MaterialDTO(String id, String typeMaterial, String name, String thematicArea, boolean isAvailable, int numberCopyMaterial, LocalDate borrowDateMaterial) {
+        this.id = id;
+        this.typeMaterial = typeMaterial;
+        this.name = name;
+        this.thematicArea = thematicArea;
+        this.isAvailable = isAvailable;
+        this.numberCopyMaterial = numberCopyMaterial;
+        this.borrowDateMaterial = borrowDateMaterial;
+    }
+
     public String getId() {
         return id;
     }
