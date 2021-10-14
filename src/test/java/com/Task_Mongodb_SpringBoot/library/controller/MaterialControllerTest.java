@@ -85,26 +85,6 @@ class MaterialControllerTest {
     }
 
     @Test
-    @DisplayName("GET/ Material by id")
-    void testFindMaterialById() throws Exception {
-
-        doReturn(materialDTO).when(materialService).findById("1");
-
-        mockMvc.perform(get("/material/{id}", "1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", is("1")))
-                .andExpect(jsonPath("$.typeMaterial", is("Libro")))
-                .andExpect(jsonPath("$.thematicArea", is("Guerra")))
-                .andExpect(jsonPath("$.name", is("La Odisea")))
-                .andExpect(jsonPath("$.numberCopyMaterial", is(1)))
-                .andExpect(jsonPath("$.available", is(true)));
-
-        /*verify(materialService, times(1)).findById("1");
-        verifyNoMoreInteractions(materialService);*/
-    }
-
-    @Test
     @DisplayName("POST/ Save Material")
     void testSaveMaterial() throws Exception {
 
@@ -161,7 +141,7 @@ class MaterialControllerTest {
         materialDTOUpdate.setName("Revista Semana");
         materialDTOUpdate.setAvailable(true);
 
-        doReturn(materialDTOUpdate).when(materialService.update(any()));
+        doReturn(materialDTOUpdate).when(materialService).update(any());
 
         mockMvc.perform(put("/material/update")
                         .contentType(MediaType.APPLICATION_JSON)
